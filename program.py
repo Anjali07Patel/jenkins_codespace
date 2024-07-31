@@ -1,5 +1,6 @@
-print("Hello Docker ")
-a=10
-b=5
-c= a + b
+print("Hello Docker")
+a = 10
+b = 5
+
+c = a + b
 print(c)
