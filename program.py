@@ -1,1 +1,5 @@
-print("Hello, world from a Docker container!")
+print("Hello Docker ")
+a=10
+b=5
+c= a + b
+print(c)
