@@ -9,7 +9,11 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
-                sh 'mvn clean package'
+                script {
+                    docker.image('maven:3.8.1-jdk-11').inside {
+                        sh 'mvn clean package'
+                    }
+                }
             }
         }
 
