@@ -34,11 +34,12 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Use the Dockerfile from the volume to build the Docker image
+                    // Use a temporary container to build the Docker image
                     sh '''
-                    docker build -t hello-world-app \
-                        -f /var/lib/docker/volumes/my-vol/_data/Dockerfile \
-                        .
+                    docker run --rm \
+                        -v my-vol:/vol \
+                        -v $PWD:/workspace \
+                        docker:latest sh -c "docker build -t hello-world-app -f /vol/Dockerfile /workspace"
                     '''
                 }
             }
