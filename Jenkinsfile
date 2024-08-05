@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Anjali08Patel/Docker_codespace.git'
+                git branch: 'main', url: 'https://github.com/Anjali07Patel/jenkins_codespace.git'
             }
         }
         stage('Build with Maven') {
