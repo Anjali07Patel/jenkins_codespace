@@ -19,15 +19,27 @@ pipeline {
         stage('Create Docker Volume and Copy Dockerfile') {
             steps {
                 script {
+                    // Create Docker volume for Dockerfile
                     sh 'docker volume create my-vol'
-                    sh 'cp Dockerfile /var/lib/docker/volumes/my-vol/_data/'
+                    // Use a temporary container to copy the Dockerfile into the volume
+                    sh '''
+                    docker run --rm \
+                        -v my-vol:/vol \
+                        -v $PWD:/workspace \
+                        busybox sh -c "cp /workspace/Dockerfile /vol/"
+                    '''
                 }
             }
         }
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t hello-world-app -f /var/lib/docker/volumes/my-vol/_data/Dockerfile .'
+                    // Use the Dockerfile from the volume to build the Docker image
+                    sh '''
+                    docker build -t hello-world-app \
+                        -f /var/lib/docker/volumes/my-vol/_data/Dockerfile \
+                        .
+                    '''
                 }
             }
         }
@@ -41,9 +53,14 @@ pipeline {
         stage('Copy JAR File to Another Container') {
             steps {
                 script {
+                    // Create Docker volume for JAR files
+                    sh 'docker volume create my-jars'
+                    // Use a temporary container to copy the JAR file into the volume
                     sh '''
-                    docker volume create my-jars
-                    docker run --rm -v my-vol:/vol -v my-jars:/jars busybox sh -c "cp /vol/my-maven-project-1.0-SNAPSHOT.jar /jars/"
+                    docker run --rm \
+                        -v my-vol:/vol \
+                        -v my-jars:/jars \
+                        busybox sh -c "cp /vol/target/my-java-project-1.0-SNAPSHOT.jar /jars/"
                     '''
                 }
             }
@@ -51,7 +68,8 @@ pipeline {
         stage('Use JAR File in Another Container') {
             steps {
                 script {
-                    sh 'docker run --rm -v my-jars:/app my-app-image java -jar /app/my-maven-project-1.0-SNAPSHOT.jar'
+                    // Run another container and use the JAR file from the volume
+                    sh 'docker run --rm -v my-jars:/app my-app-image java -jar /app/my-java-project-1.0-SNAPSHOT.jar'
                 }
             }
         }
