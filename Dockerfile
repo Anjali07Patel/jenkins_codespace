@@ -1,7 +1,8 @@
-FROM python:3.8-slim
+# Dockerfile
+FROM python:3.9-slim
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-copy . .
+COPY program.py .
 
-CMD ["python","./program.py"]
+CMD ["python", "program.py"]
